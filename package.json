@@ -1,0 +1,12 @@
+{
+  "name": "secrets-api-local",
+  "version": "1.0.0",
+  "description": "Local replica of App Brewery Secrets API for learning Authentication",
+  "main": "index.js",
+  "type": "module",
+  "dependencies": {
+    "axios": "^1.20.0",
+    "body-parser": "^1.20.2",
+    "express": "^4.19.2"
+  }
+}
