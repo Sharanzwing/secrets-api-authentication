@@ -3,7 +3,7 @@ import bodyParser from "body-parser";
 import axios from "axios";
 
 const app = express();
-const port = 4000;
+const port = process.env.PORT || 4000;
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
@@ -330,6 +330,23 @@ app.get("/demo-pagination", async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
+});
+
+// Welcome / Landing route for the root URL
+app.get("/", (req, res) => {
+  res.json({
+    message: "🎉 Welcome to the Secrets API!",
+    status: "Live & Healthy",
+    endpoints: {
+      "Public Random Secret": "GET /random",
+      "User Registration": "POST /register",
+      "Generate API Key": "GET /generate-api-key",
+      "Get Bearer Token": "GET /get-auth-token",
+      "Paginated All Secrets (Basic Auth)": "GET /all?page=1",
+      "Filter Secrets (API Key)": "GET /filter?score=7&apiKey=YOUR_KEY",
+      "Get Secret by ID (Bearer Token)": "GET /secrets/1"
+    }
+  });
 });
 
 app.listen(port, () => {
