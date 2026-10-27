@@ -1,12 +1,20 @@
 import express from "express";
 import bodyParser from "body-parser";
 import axios from "axios";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const port = process.env.PORT || 4000;
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
+
+// Serve static HTML documentation files from the "public" folder
+app.use(express.static(path.join(__dirname, "public")));
 
 // ============================================================================
 // DATA STORES (Expanded with 25 secrets for realistic pagination)
@@ -332,21 +340,9 @@ app.get("/demo-pagination", async (req, res) => {
   }
 });
 
-// Welcome / Landing route for the root URL
+// Welcome / Landing route: serves beautiful Bored-API style HTML documentation
 app.get("/", (req, res) => {
-  res.json({
-    message: "🎉 Welcome to the Secrets API!",
-    status: "Live & Healthy",
-    endpoints: {
-      "Public Random Secret": "GET /random",
-      "User Registration": "POST /register",
-      "Generate API Key": "GET /generate-api-key",
-      "Get Bearer Token": "GET /get-auth-token",
-      "Paginated All Secrets (Basic Auth)": "GET /all?page=1",
-      "Filter Secrets (API Key)": "GET /filter?score=7&apiKey=YOUR_KEY",
-      "Get Secret by ID (Bearer Token)": "GET /secrets/1"
-    }
-  });
+  res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
 app.listen(port, () => {
