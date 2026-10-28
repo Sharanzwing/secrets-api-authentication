@@ -17,6 +17,9 @@
       --accent: #38bdf8;
       --get: #10b981;
       --post: #3b82f6;
+      --put: #f59e0b;
+      --patch: #a855f7;
+      --delete: #ef4444;
       --auth-badge: #f59e0b;
       --code-bg: #090d16;
     }
@@ -115,6 +118,24 @@
       border: 1px solid rgba(59, 130, 246, 0.3);
     }
 
+    .method.put {
+      background: rgba(245, 158, 11, 0.15);
+      color: var(--put);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .method.patch {
+      background: rgba(168, 85, 247, 0.15);
+      color: var(--patch);
+      border: 1px solid rgba(168, 85, 247, 0.3);
+    }
+
+    .method.delete {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--delete);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
     .path {
       font-family: 'JetBrains Mono', monospace;
       font-size: 1.05rem;
@@ -179,6 +200,7 @@
       border-radius: 8px;
       padding: 14px 16px;
       overflow-x: auto;
+      margin-bottom: 16px;
     }
 
     code {
@@ -201,7 +223,7 @@
   <div class="container">
     <header>
       <h1>🔐 Secrets API Documentation</h1>
-      <p class="subtitle">A full-stack RESTful API learning lab demonstrating the 4 core tiers of API authentication, dynamic pagination, and credential generation.</p>
+      <p class="subtitle">A full-stack RESTful API learning lab demonstrating the 4 core tiers of API authentication, full CRUD operations (GET, POST, PUT, PATCH, DELETE), dynamic pagination, and credential generation.</p>
       <div class="info-banner">
         💡 <strong>Base URL:</strong> <code>https://secrets-api-authentication.onrender.com</code> (or <code>http://localhost:4000</code> locally)
       </div>
@@ -221,7 +243,7 @@
   "username": "developer",
   "password": "securepassword123"
 }</code></pre>
-        <div class="section-title" style="margin-top: 14px;">Example Response (201 Created):</div>
+        <div class="section-title">Example Response (201 Created):</div>
         <pre><code>{
   "message": "User registered successfully! You can now generate an API key at GET /generate-api-key",
   "username": "developer"
@@ -368,6 +390,113 @@
   "score": 8,
   "username": "chuck",
   "timestamp": "2024-01-02"
+}</code></pre>
+      </div>
+    </div>
+
+    <!-- Endpoint 8: Create New Secret -->
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="method post">POST</span>
+        <span class="path">/secrets</span>
+        <span class="auth-tag">Level 4: Bearer Token</span>
+      </div>
+      <div class="endpoint-body">
+        <p class="desc">Create a new secret associated with your authenticated user account.</p>
+        <div class="section-title">Headers:</div>
+        <div class="request-box">Authorization: Bearer bearer-token-9xk3m2p8d7</div>
+        <div class="section-title">Request Body (JSON or Form-Urlencoded):</div>
+        <pre><code>{
+  "secret": "I secretly love pineapple on pizza.",
+  "score": 9
+}</code></pre>
+        <div class="section-title">Example Response (201 Created):</div>
+        <pre><code>{
+  "id": 26,
+  "secret": "I secretly love pineapple on pizza.",
+  "score": 9,
+  "username": "developer",
+  "timestamp": "2026-10-28T14:00:00.000Z"
+}</code></pre>
+      </div>
+    </div>
+
+    <!-- Endpoint 9: Replace / Overwrite Secret (PUT) -->
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="method put">PUT</span>
+        <span class="path">/secrets/:id</span>
+        <span class="auth-tag">Level 4: Bearer Token</span>
+      </div>
+      <div class="endpoint-body">
+        <p class="desc">Completely replace a secret's fields. Both <code>secret</code> and <code>score</code> must be supplied. Only the user who created the secret is authorized to modify it.</p>
+        <div class="section-title">Headers:</div>
+        <div class="request-box">Authorization: Bearer bearer-token-9xk3m2p8d7</div>
+        <div class="section-title">Request Body (Both fields required):</div>
+        <pre><code>{
+  "secret": "Updated completely new secret message.",
+  "score": 10
+}</code></pre>
+        <div class="section-title">Example Response (200 OK):</div>
+        <pre><code>{
+  "id": 26,
+  "secret": "Updated completely new secret message.",
+  "score": 10,
+  "username": "developer",
+  "timestamp": "2026-10-28T14:00:00.000Z"
+}</code></pre>
+      </div>
+    </div>
+
+    <!-- Endpoint 10: Partially Update Secret (PATCH) -->
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="method patch">PATCH</span>
+        <span class="path">/secrets/:id</span>
+        <span class="auth-tag">Level 4: Bearer Token</span>
+      </div>
+      <div class="endpoint-body">
+        <p class="desc">Partially update an existing secret. You can supply <code>secret</code>, <code>score</code>, or both. Only the creator of the secret is authorized to update it.</p>
+        <div class="section-title">Headers:</div>
+        <div class="request-box">Authorization: Bearer bearer-token-9xk3m2p8d7</div>
+        <div class="section-title">Request Body (Any subset of fields):</div>
+        <pre><code>{
+  "score": 10
+}</code></pre>
+        <div class="section-title">Example Response (200 OK):</div>
+        <pre><code>{
+  "id": 26,
+  "secret": "I secretly love pineapple on pizza.",
+  "score": 10,
+  "username": "developer",
+  "timestamp": "2026-10-28T14:00:00.000Z"
+}</code></pre>
+      </div>
+    </div>
+
+    <!-- Endpoint 11: Delete Secret (DELETE) -->
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="method delete">DELETE</span>
+        <span class="path">/secrets/:id</span>
+        <span class="auth-tag">Level 4: Bearer Token</span>
+      </div>
+      <div class="endpoint-body">
+        <p class="desc">Permanently remove a secret from the database. Only the user who created the secret is authorized to delete it.</p>
+        <div class="section-title">Headers:</div>
+        <div class="request-box">Authorization: Bearer bearer-token-9xk3m2p8d7</div>
+        <div class="section-title">Example Response (200 OK):</div>
+        <pre><code>{
+  "message": "Secret deleted successfully",
+  "deletedSecret": [
+    {
+      "id": 26,
+      "secret": "I secretly love pineapple on pizza.",
+      "score": 9,
+      "username": "developer",
+      "timestamp": "2026-10-28T14:00:00.000Z"
+    }
+  ]
 }</code></pre>
       </div>
     </div>

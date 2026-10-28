@@ -339,6 +339,8 @@ app.put("/secrets/:id", (req, res) => {
   if (secret && score) {
     secrets[secretIndex].secret = secret;
     secrets[secretIndex].score = parseInt(score);
+  } else {
+    return res.status(400).json({ error: "Bad Request: Both 'secret' and 'score' fields are required for PUT." });
   }
 
   res.json(secrets[secretIndex]);
