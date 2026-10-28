@@ -336,10 +336,71 @@ app.put("/secrets/:id", (req, res) => {
   }
 
   const { secret, score } = req.body;
-  if (secret) secrets[secretIndex].secret = secret;
-  if (score) secrets[secretIndex].score = parseInt(score);
+  if (secret && score) {
+    secrets[secretIndex].secret = secret;
+    secrets[secretIndex].score = parseInt(score);
+  }
 
   res.json(secrets[secretIndex]);
+});
+
+app.patch("/secrets/:id", (req, res) => {
+  const authHeader = req.headers["authorization"];
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return res.status(401).json({ error: "Unauthorized: Missing Bearer Token" });
+  }
+
+  const token = authHeader.split(" ")[1];
+  const matchingUsername = Object.keys(USERS_DB).find((u) => USERS_DB[u].bearerToken === token);
+  if (!matchingUsername) {
+    return res.status(403).json({ error: "Forbidden: Invalid Bearer Token" });
+  }
+
+  const id = parseInt(req.params.id);
+  const secretIndex = secrets.findIndex((s) => s.id === id);
+
+  if (secretIndex === -1) {
+    return res.status(404).json({ error: "Secret not found" });
+  }
+
+  // Only allow the user who created the secret to update it
+  if (secrets[secretIndex].username !== matchingUsername) {
+    return res.status(403).json({ error: "Forbidden: You can only update your own secrets" });
+  }
+
+  const { secret, score } = req.body;
+  if (secret) secrets[secretIndex].secret = secret;
+  if (score) secrets[secretIndex].score = parseInt(score);
+  
+  res.json(secrets[secretIndex]);
+});
+
+app.delete("/secrets/:id", (req, res) => {
+  const authHeader = req.headers["authorization"];
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return res.status(401).json({ error: "Unauthorized: Missing Bearer Token" });
+  }
+
+  const token = authHeader.split(" ")[1];
+  const matchingUsername = Object.keys(USERS_DB).find((u) => USERS_DB[u].bearerToken === token);
+  if (!matchingUsername) {
+    return res.status(403).json({ error: "Forbidden: Invalid Bearer Token" });
+  }
+
+  const id = parseInt(req.params.id);
+  const secretIndex = secrets.findIndex((s) => s.id === id);
+
+  if (secretIndex === -1) {
+    return res.status(404).json({ error: "Secret not found" });
+  }
+
+  // Only allow the user who created the secret to delete it
+  if (secrets[secretIndex].username !== matchingUsername) {
+    return res.status(403).json({ error: "Forbidden: You can only delete your own secrets" });
+  }
+
+  const deletedSecret = secrets.splice(secretIndex, 1);
+  res.json({ message: "Secret deleted successfully", deletedSecret });
 });
 
 // ============================================================================
